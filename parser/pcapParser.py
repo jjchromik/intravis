@@ -1,4 +1,4 @@
-import ids
+import dtmc
 import pyshark
 from datetime import datetime
 
@@ -11,9 +11,9 @@ class PcapParser():
 		self.bisimulation = bisimulation
 		
 		entryDate = datetime.fromtimestamp(0)
-		entryState = ids.State("-", False, False, 0, 0, [], entryDate, bisimulation)
+		entryState = dtmc.State("-", False, False, 0, 0, [], entryDate, bisimulation)
 		entryState.entryState(True)
-		self.dtmc = ids.DTMC(entryState, bisimulation)
+		self.dtmc = dtmc.DTMC(entryState, bisimulation)
 		self.states = []
 		self.iec104Port = 2404
 	
@@ -52,19 +52,26 @@ class PcapParser():
 			if not (self.isApciLayer(p[layer])):
 				continue
 			
-			cff = self.getControlFieldFormat(p[layer])
-
-			""" type id (reading, writing, ...)"""
-			typeId = str(p[layer+1].typeid)
-	
-			""" ASDU-address (common address)"""
-			asduAddress = str(p[layer+1].addr)
-	
-			""" IOA (information object address)"""
-			ioas = self.getIoas(p[layer+1])
+			try:
 			
-			state = ids.State(cff, request, response, typeId, asduAddress, ioas, timestamp, self.bisimulation)
-			self.dtmc.addState(state)
+				cff = self.getControlFieldFormat(p[layer])
+	
+				""" type id (reading, writing, ...)"""
+				typeId = str(p[layer+1].typeid)
+		
+				""" ASDU-address (common address)"""
+				asduAddress = str(p[layer+1].addr)
+		
+				""" IOA (information object address)"""
+				ioas = self.getIoas(p[layer+1])
+				if "1313289" in ioas:
+					print(p)
+				
+				state = dtmc.State(cff, request, response, typeId, asduAddress, ioas, timestamp, self.bisimulation)
+				self.dtmc.addState(state)
+			
+			except:
+				continue
 		
 	def getIoas(self, layer):
 		ioas = []

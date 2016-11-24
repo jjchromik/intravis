@@ -28,6 +28,7 @@ class Graph():
 		os.remove(outputfile)			
 	
 	def mono_graph(self):
+		violationStates = []
 		for state in self.dtmc.states:
 			self.addTransitions(id(state), state.transitions)
 			
@@ -44,12 +45,18 @@ class Graph():
 				" -- TypeID: " + str(state.typeId) + 
 				"\nASDU-Addr: " + str(state.asduAddress) +
 				"\nIOA: " + str(state.ioas) + 
-				#"\nFirst occurance: " + str(firstOccurance) + 
-				#"\nLast occurance: " + str(lastOccurance) +
+				"\nFirst occurance: " + str(firstOccurance) + 
+				"\nLast occurance: " + str(lastOccurance) +
 				"\nCount: " + str(state.numberEvents)})
 			
+			if state.violation:
+				violationStates.append(id(state))
+				
 		for node in self.nodes:
-			self.graph.node(str(node), str(self.nodes[node]), {'penwidth' : "7"})
+			if node in violationStates:
+				self.graph.node(str(node), str(self.nodes[node]), {'color' : "red", 'penwidth' : "7"})
+			else:
+				self.graph.node(str(node), str(self.nodes[node]), {'penwidth' : "7"})
 	
 		for edge in self.edges:
 			self.graph.edge(str(edge[0]), str(edge[1]), str(edge[2]), edge[3])					
@@ -89,10 +96,11 @@ class Graph():
 				" -- TypeID: " + str(state.typeId) + 
 				"\nASDU-Addr: " + str(state.asduAddress) +
 				"\nIOA(s): " + str(ioas) + 
-				#"\nFirst occurance: " + str(firstOccurance) + 
-				#"\nLast occurance: " + str(lastOccurance) +
+				"\nFirst occurance: " + str(firstOccurance) + 
+				"\nLast occurance: " + str(lastOccurance) +
 				"\nCount: " + str(state.numberEvents)})
 			nodeHashes.update({id(state) : str(state.__bisimulationHash__())})
+			
 			if str(nodeHashes[id(state)]) not in nodeColors:
 				nodeColors.append(nodeHashes[id(state)])
 				
@@ -104,7 +112,10 @@ class Graph():
 	
 	def addTransitions(self, stateId, transitions):
 		for transition in transitions:
-			self.edges.append((stateId, id(transition.destination), " " + transition.transitionProbability(), {'penwidth' : str(int(7*transition.destinationJumps/self.maxJumpRate+1)), "fontsize":"24pt"}))
+			color = 'black'
+			if transition.violation:
+				color = 'red'
+			self.edges.append((stateId, id(transition.destination), " " + transition.transitionProbability(), {'penwidth' : str(int(7*transition.destinationJumps/self.maxJumpRate+1)), "fontsize":"24pt", "color":color}, transition.violation))
 			
 	def nameDirection(self, state):
 		direction = ""

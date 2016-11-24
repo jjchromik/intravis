@@ -2,48 +2,31 @@
 import argparse	
 import sys
 import re
-import ids
+import cli
 
 if __name__ == "__main__":
 	''' initialize the argparser '''
 	parser = argparse.ArgumentParser(description='description of the program', epilog='written by Benedikt Ferling<benedikt.ferling@wwu.de>')
 
-	parser.add_argument("-t", dest='inputtrace', metavar="FILE", required=True, help='teaching the DTMC with this file')
+	parser.add_argument("-t", dest='trainingTrace', metavar="FILE", required=True, help='train the DTMC with this file')
 	parser.add_argument("-i", dest='ips', metavar="IPs", required=True, help='two IPs semi-colon seperated')	
-	parser.add_argument("-o", dest='outputpdf', metavar="OUTPUTFILE", help='pdf outputfile')
-	parser.add_argument("-x", dest='outputxml', metavar="OUTPUTFILE", help="xml outputfile")
+	parser.add_argument("-o", dest='outputpdf', metavar="OUTPUTFILE", default="", help='pdf outputfile')
+	parser.add_argument("-x", dest='outputxml', metavar="OUTPUTFILE", default="", help="xml outputfile")
 	parser.add_argument("-b", dest='bisimulation', metavar="BISIMULATION", default=0, help='use bisimulation. "0": no bisimulation(default), "1": merge all IOAS, "2": merge overlapping IOAs')
 	parser.add_argument("-c", dest='colored', action="store_true", default=False, help='colored graph')
+	parser.add_argument("-v", dest='testingTrace', default="", metavar="FILE", help='validate this trace against the training trace')
 	
 	if len(sys.argv) == 1:
 		parser.print_help()
 		sys.exit(0)
-	
+		
 	args = parser.parse_args()
 	
-	import cli
-	if not args.outputpdf and not args.outputxml:
+	if args.outputpdf == "" and args.outputxml == "":
 		parser.print_help()
 		exit(1)
 		
-	if not args.ips:
-		parser.print_help()
-		exit(1)
-		
-	ips = str(args.ips).split(';')
-	c = cli.Cli(args.inputtrace, ips[0], ips[1], args.colored)
-	c.createDTMC(int(args.bisimulation))
+	cli = cli.Cli(args)
+	exitcode = cli.run()
 	
-	if args.outputpdf:
-		tmp = args.outputpdf.rstrip('pdf')
-		filename = tmp.rstrip('.')
-		c.setPdfFile(filename)
-		c.createPdf()
-		
-	if args.outputxml:
-		tmp = args.outputxml.rstrip('xml')
-		filename = tmp.rstrip('.')
-		c.setXmlFile(filename)
-		c.createXml()
-		
-	exit(0)
+	exit(exitcode)
