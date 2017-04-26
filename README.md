@@ -1,6 +1,6 @@
 # InTraVis
 
-__In__dustrial __Tra__ffic __Vis__ualizer creates a DTMC and the corresponding graph of a pcap-trace with IEC104 traffic. It was initially designed as a proof of concept for my bachelor thesis -- Sequence attacks on SCADA networks. 
+**In**dustrial **Tra**ffic **Vis**ualizer creates a DTMC and the corresponding graph of a pcap-trace with IEC104 traffic. It was initially designed as a proof of concept for my bachelor thesis -- Sequence attacks on SCADA networks. 
 
 It can also export the resulting DTMC in XML format. Uppon the corresponding DTMC two minimizations(bisimulations) are supported. The first minimization merges all IOAs together, the second merges states with overlapping IOAs together. 
 
@@ -10,8 +10,6 @@ __NOTE__: This tool has been intended for research purpose.
 ```
 usage: __init__.py [-h] -t FILE -i IPs [-o OUTPUTFILE] [-x OUTPUTFILE]
                    [-b BISIMULATION] [-c] [-v FILE]
-
-description of the program
 
 optional arguments:
   -h, --help       show this help message and exit
