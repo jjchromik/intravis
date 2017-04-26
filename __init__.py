@@ -6,7 +6,7 @@ import cli
 
 if __name__ == "__main__":
 	''' initialize the argparser '''
-	parser = argparse.ArgumentParser(description='description of the program', epilog='written by Benedikt Ferling<benedikt.ferling@wwu.de>')
+	parser = argparse.ArgumentParser(description='', epilog='written by Benedikt Ferling<benedikt.ferling@wwu.de>')
 
 	parser.add_argument("-t", dest='trainingTrace', metavar="FILE", required=True, help='train the DTMC with this file')
 	parser.add_argument("-i", dest='ips', metavar="IPs", required=True, help='two IPs semi-colon seperated')	
